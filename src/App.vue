@@ -1,17 +1,17 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import CityModal from '@/components/CityModal.vue';
+import { useStore } from './stores/store';
+import { ref } from 'vue';
+import NavBar from '@/components/nav/NavBar.vue'
+
+const store = useStore();
+const showModal = ref(false);;
 </script>
 
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <NavBar v-model="store.currentCity.id" @showModal="showModal = true;"/>
+    <router-view></router-view>
+  <CityModal v-model="showModal"/>
 </template>
 
 <style scoped>
