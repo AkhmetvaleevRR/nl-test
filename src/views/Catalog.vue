@@ -6,13 +6,20 @@
         class="catalog__button"
         role="button"
       >
-        <img class="icon" src="@/assets/icons/backIcon.svg" alt="navigation icon">
+        <img class="catalog__icon" src="@/assets/icons/backIcon.svg" alt="navigation icon">
       </router-link>
       <h1>{{store.currentCategory.name}}</h1>
     </div>
-    <div class="catalog__content" v-show="!isLoading">
-      <SideMenu :categories="store.currentCategory.children" :category-slug="route.params.categorySlug" @selectCategory="loadData" v-if="store.currentCategory.children.length > 2"></SideMenu>
-      <div class="catalog__list" v-if="products.length > 0">
+    <div class="catalog__content">
+      <SideMenu 
+        :categories="store.currentCategory.children"        
+        :category-slug="props.categorySlug"
+        :subcategory-slug="props.subcategorySlug"
+        @selectCategory="loadData" 
+        @closeMenu="showMenu = false"
+        v-if="isMenuShowed">
+      </SideMenu>
+      <div class="catalog__list" v-if="products.length > 0 && !isLoading">
         <CatalogCard
           v-for="product in products" 
           :key="product.id" 
@@ -25,21 +32,80 @@
     </div>
     <Loader v-show="isLoading"/>
   </div>
+  <ui-button 
+    type="icon" 
+    class="mobile-button mobile-button__menu"
+    aria-label="Открыть меню"
+    v-show="showMobileMenuButton"
+    @click="showMenu = !showMenu"
+  >
+    <img class="catalog__icon" src="@/assets/icons/menuIcon.svg" alt="menu icon">
+  </ui-button>
+  <router-link 
+    to="/" 
+    class="mobile-button mobile-button__back"
+    role="button"
+    v-show="showMobileBackButton"
+    aria-label="Вернуться на главную"
+  >
+    <img class="catalog__icon" src="@/assets/icons/backIcon.svg" alt="navigation icon">
+  </router-link>
 </template>
 
 <script setup lang="js">
-import { ref, watch } from 'vue';
+import { ref, watch, computed, onMounted, onUnmounted } from 'vue';
 import { fetchProducts } from '@/services/api.js';
 import { useStore } from '../stores/store';
-import { useRoute } from 'vue-router'
+import uiButton from '../components/ui/uiButton.vue';
 import SideMenu from '../components/nav/sideMenu.vue';
 import CatalogCard from '../components/CatalogCard.vue';  
 import Loader from '../components/ui/Loader.vue';
 
-const route = useRoute()
+const props = defineProps({
+  categorySlug: {
+    type: String,
+    required: true
+  },
+  subcategorySlug: {
+    type: String,
+    required: false
+  }
+});
+
 const store = useStore();
 const products = ref([]);
+const showMenu = ref(false);
+const isMobile = ref(false);
 const isLoading = ref(false);
+
+const checkScreenWidth = () => {
+  isMobile.value = window.innerWidth <= 1024;
+};
+
+onMounted(() => {
+  checkScreenWidth();
+  window.addEventListener('resize', checkScreenWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreenWidth);
+});
+
+const hasChildren = computed(() => {
+  return store.currentCategory.children && store.currentCategory.children.length > 2;
+});
+
+const showMobileMenuButton = computed(() => {
+  return isMobile.value && hasChildren.value;
+});
+
+const showMobileBackButton = computed(() => {
+  return isMobile.value && !hasChildren.value;
+});
+
+const isMenuShowed = computed(() => {
+  return hasChildren.value && (isMobile.value?showMenu.value:true);
+});
 
 const loadData = async () => {
   try {
@@ -48,14 +114,13 @@ const loadData = async () => {
     if (store.categories.length === 0) {
       await store.loadCategories();
     }
-    
     store.currentCategory = store.categories.find(
-      category => category.slug === route.params.categorySlug
+      category => category.slug === props.categorySlug
     );
     
     const response = await fetchProducts(
-      route.params.categorySlug,
-      route.params.subcategorySlug,
+      props.categorySlug,
+      props.subcategorySlug,
       store.currentCity.id
     )
 
@@ -110,5 +175,31 @@ watch(() => store.currentCity.id,
 
 .catalog__message {
   text-align: center;
+}
+
+
+.mobile-button {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  right: 20px;
+  display: none;
+}
+
+.catalog__icon {
+  height: 48px;
+}
+
+@media (max-width: 1024px) {
+  .catalog {
+    margin-top: 92px;
+    width: 100%;
+  }
+  .catalog__title {
+    display: none;
+  }
+  .mobile-button {
+    display: block;
+  }
 }
 </style>

@@ -1,8 +1,17 @@
 <template>
-  <button class="ui-button">
+  <button :class="type === 'icon' ? 'ui-button__icon' : 'ui-button'">
     <slot />
   </button>
 </template>
+
+<script setup lang="js">
+defineProps({
+  type: {
+    type: String ['icon', 'primary'],
+    default: "primary"
+  },
+})
+</script>
 
 <style scoped>
 button {
@@ -28,5 +37,11 @@ button {
 
 a {
   text-decoration: none;
+}
+
+.ui-button__icon {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
 }
 </style>

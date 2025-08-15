@@ -3,12 +3,14 @@
     <div class="modal__content">
       <div class="modal__title">        
         <h2>Выбор населённого пункта</h2>
-        <button class="modal__close-button" @click="close">        
+        <ui-button type="icon" class="modal__button--close" @click="close">        
           <img class="icon" src="@/assets/icons/crossIcon.svg" alt="cross icon">
-        </button>      
+        </ui-button>      
       </div>
       <div class="modal__search">
-        <div class="modal__search-result">
+        <div class="modal__search-result"        
+          :class="{ 'has-results': citiesArr.length && searchQuery.length > 2 }"
+        >
           <input
             type="text"
             v-model="searchQuery"
@@ -16,10 +18,10 @@
             placeholder="Например, Санкт-петербург"
             class="modal__input"
           >
-          <button class="modal__clear-button" @click="clearSearch">        
+          <ui-button type="icon" class="modal__button--clear" @click="clearSearch" v-show="searchQuery.length > 0">        
             <img class="icon" src="@/assets/icons/crossIcon.svg" alt="cross icon">
-          </button>      
-          <ul class="modal__list" v-if="citiesArr.length">
+          </ui-button>
+          <ul class="modal__list" v-if="citiesArr.length && searchQuery.length > 2">
             <li 
               v-for="city in citiesArr" 
               :key="city" 
@@ -34,7 +36,7 @@
         <ui-button
           @click="confirmSelection"
           :disabled="!selectedCity"
-          class="modal__button"
+          class="modal__button--approve"
         >
           ПОДТВЕРДИТЬ
         </ui-button>
@@ -79,7 +81,7 @@ const handleSearch = () => {
     clearTimeout(debounceTimer.value);
     debounceTimer.value = setTimeout(() => {
       searchCities(searchQuery.value);
-    }, 300);
+    }, 500);
   }
 };
 
@@ -132,10 +134,11 @@ const close = () => {
 .modal__title {
   display: flex;    
   justify-content: space-between;
+  margin-bottom: 16px;
 }
 
 .modal__title h2 {
-  margin-bottom: 16px;
+  margin: 0;
   font-size: 20px;
   text-align: center;
 }
@@ -150,6 +153,8 @@ const close = () => {
 .modal__search-result {
   position: relative;
   width: 70%;
+  border-radius: 4px;
+  margin: 1px;
 }
 
 .modal__input {
@@ -160,6 +165,25 @@ const close = () => {
   width: 100%;
   padding: 0 12px;
   box-sizing: border-box;
+  border: 1px solid #272727;
+  transition: border-radius 0.2s;
+}
+
+.modal__search-result.has-results .modal__list {
+  margin: 0;
+  border: 1px solid #272727;
+  border-top: none ;
+}
+
+.modal__search-result.has-results::after {
+  content: "";
+  position: absolute;
+  width: 90%;
+  right: 30px;
+  bottom: 5px;
+  height: 1px;
+  background-color: #9797974D;
+  z-index: 20;
 }
 
 .modal__input:focus-visible {
@@ -177,26 +201,25 @@ const close = () => {
   max-height: 300px;
   overflow-y: auto;
   border: 1px solid #eee;
-  border-top: 0;
+  border-top: none;
   border-radius: 0 0 4px 4px;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 10;
 }
 
-.modal__close-button, .modal__clear-button {
+.modal__button--close, .modal__button--clear {
   border: none;
-  background-color: transparent;
+  background-color: #fff;
   cursor: pointer;
 }
 
-.modal__clear-button {
+.modal__button--clear {
   position: absolute;
   top: 16px;
   right: 8px;
 }
 
-.modal__button {
+.modal__button--approve {
   flex: 1;
   letter-spacing: 1.75px;
   font-size: 16px;
@@ -224,5 +247,21 @@ const close = () => {
   padding: 16px;
   text-align: center;
   color: #666;
+}
+
+@media (max-width: 1024px) {
+  .modal__content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+  }
+  .modal__search {
+    flex-direction: column;
+  }
+
+  .modal__search-result {
+    width: 100%;
+  }
 }
 </style>

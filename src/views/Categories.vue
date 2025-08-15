@@ -1,7 +1,7 @@
 <template>
   <div class="categories">
     <h1>Категории товаров</h1>
-    <div class="categories-table" v-if="!isLoading">
+    <div class="categories__table " v-if="!isLoading">
       <CategoryCard 
         v-for="category in store.categories" 
         :key="category.id" 
@@ -21,10 +21,14 @@ import Loader from '@/components/ui/Loader.vue';
 const store = useStore();
 const isLoading = ref(false);
 
-watch(() => store.currentCity.id,
- (newCity) => {
-    if (newCity) {
-      store.loadCategories();
+watch(() => store.currentCity.id, 
+  async (newCity) => {
+    if (!newCity) return;    
+    try {
+      isLoading.value = true;
+      await store.loadCategories();
+    } finally {
+      isLoading.value = false;
     }
   },
   { immediate: true }
@@ -46,16 +50,7 @@ watch(() => store.currentCity.id,
   margin: 20px 5px 20px 0;
 }
 
-.city-button {
-  margin-bottom: 20px;
-  padding: 8px 16px;
-  background: #42b983;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.categories-table {
+.categories__table  {
   display: grid;
   justify-items: center;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -64,7 +59,8 @@ watch(() => store.currentCity.id,
 
 
 @media (max-width: 1024px) {
-  .categories {
+  .categories {    
+    margin-top: 72px;
     width: 100%;
   }
   .categories h1 {
@@ -74,10 +70,11 @@ watch(() => store.currentCity.id,
     text-align: center;
     margin: 20px 0;
   }
-  .categories-table {
+  .categories__table  {
     display: flex;
-    align-items: center;
-    flex-direction: column;
+    justify-content: center;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 22px;
   }
 }

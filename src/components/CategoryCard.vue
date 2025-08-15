@@ -1,11 +1,12 @@
 <template>
   <router-link 
-    class="category-card" 
+    class="category-card"
     :to="`/category/${category.slug}/`" 
     :style="{ backgroundImage: `url(${category.image})`}">
-    <p class="category-card__name" :style="{ color: category.text_color? category.text_color : '#FFF'}"
-        @click=""
-      >
+    <p 
+      class="category-card__name" 
+      :style="{ color: category.text_color? category.text_color : '#FFF'}"
+    >
       {{category.name}}
     </p>
   </router-link>

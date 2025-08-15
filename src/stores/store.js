@@ -3,14 +3,14 @@ import { ref, computed, watch } from "vue";
 import {fetchCityData, fetchCategories} from '@/services/api'
 
 export const useStore = defineStore("store", () => {
-
   //city
-  const defaultCity = {
+  
+  const DEFAULT_CITY = {
     id: 1,
-    city: 'Новосибирск'
-  }
+    city: "Новосибирск",
+  };
   const currentCity = ref(
-    JSON.parse(localStorage.getItem("selectedCity")) || defaultCity
+    JSON.parse(localStorage.getItem("selectedCity")) || DEFAULT_CITY
   );
   const getCurrentCity = computed(() => currentCity.value);
   const setCity = (cityObj) => {
