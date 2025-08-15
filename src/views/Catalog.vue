@@ -26,7 +26,7 @@
           :product="product" 
         />
       </div>
-      <span class="catalog__message" v-else>
+      <span class="catalog__message" v-if="products.length === 0 && !isLoading">
         Продукты не найдены
       </span>
     </div>

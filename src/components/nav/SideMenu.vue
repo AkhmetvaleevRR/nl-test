@@ -62,7 +62,11 @@ const props = defineProps({
 })
 </script>
 
-<style>
+<style scoped>
+.categories-menu {
+  margin-right: auto;
+}
+
 .categories-menu__list {
   list-style: none;
   padding: 0;
