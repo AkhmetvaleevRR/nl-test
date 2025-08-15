@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Catalog from "@/views/Catalog.vue";
 import Categories from "@/views/Categories.vue";
+import ErrorPage from "@/views/ErrorPage.vue";
 
 const routes = [
   { path: "/", name: "Categories", component: Categories },
@@ -13,6 +14,11 @@ const routes = [
     path: "/category/:categorySlug/:subcategorySlug",
     component: Catalog,
     props: true,
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: ErrorPage,
   },
 ];
 
